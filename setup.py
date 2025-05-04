@@ -7,8 +7,7 @@ def get_requirement(file_path):
     requirements=[]
     with open(file_path) as file_obj:
         requirements=file_obj.readlines()
-
-    requirements=[i.replace('\n','') for i in requirements]
+    requirements=[i.replace('\n','') for i in requirements if i!='- e.\n']
     return requirements
 
 
