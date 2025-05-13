@@ -39,12 +39,23 @@ class ModelTrainer:
                 }
             
             model_trainer_report:dict=model_evaluate(Xtrain,ytrain,Xtest,ytest,models)
-
+            logging.info('Models builts and evaluated')
             model_trainer_report_df=pd.DataFrame(model_trainer_report.values(),index=model_trainer_report.keys(),columns=['train_score','test_score'])
             
-            print(model_trainer_report_df)
+
+            model_trainer_report_df['fit']=model_trainer_report_df['train_score']-model_trainer_report_df['test_score']
+            model_trainer_report_df['fit']=model_trainer_report_df['fit'].apply(lambda x: 'good_fit' if x<0.1 else 'over_fit')
+            best_model_score=max(model_trainer_report_df[(model_trainer_report_df['fit']=='good_fit')]['train_score'])
+
+            best_model_name=model_trainer_report_df[model_trainer_report_df['train_score']==best_model_score].index[0]
+
+            best_model_obj=models[best_model_name]
+
+            save_object(file_path=self.model_trainer_config.trained_model_file_path,obj=best_model_obj)
             
-            logging.info('Models builts and evaluated')
+            print(best_model_name,model_trainer_report_df,sep='\n')
+            # print(model_trainer_report_df)
+            logging.info('Best model selected')
 
 
         except Exception as e:
